@@ -60,14 +60,14 @@ feature_extract() {
 	# Prints the values formatted
 	#awk 'BEGIN {print ($values*100)}'  | tr " " "\n"
 	#echo $values
-	printf "Raw values: \n"
+	printf "Raw values: (Milliseconds) \n"
 	for val in $values; do echo $val; done
-	printf "Percentages: \n"
-	for val in $values; do awk -v n="$val" 'BEGIN{ printf int(n*100+0.5) "%\n"}'; done
-	printf "\nLargest value extracted (Percentage): "
+	printf "Seconds: \n"
+	for val in $values; do awk -v n="$val" 'BEGIN{ printf int(n*100+0.5) "\n"}'; done
+	printf "\nLargest value extracted (Seconds): "
 	# Extract the given column number from the filename and print out the exact decimal value using reverse sort and printing the first available value using the head command to print the top of the file
 	largest=`cut -d , -f $column_number $filename | grep -Eo '[0]+\.[0-9]+' | sort -rn | head -n 1`
-	awk -v n="$largest" 'BEGIN{ printf int(n*100+0.5) "%\n"}'
+	awk -v n="$largest" 'BEGIN{ printf int(n*100+0.5) "\n"}'
 	printf "Exact value: $largest\n"
 }
 
