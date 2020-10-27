@@ -20,6 +20,7 @@ main() {
 	for i in `seq 1 $num_requests`; do printf "Request: $i\n"; make_request $url | tee -a $test_filename; done;
 
 	extract_contents $test_filename
+	echo "Number of requests made: $num_requests"
 	exit 0
 }
 
@@ -51,12 +52,23 @@ feature_extract() {
 	local column_number=$2
 
 	# Full extraction of selected column 
-	cut -d , -f $column_number $filename | grep [0-9] | sort -n
+	#values=`cut -d , -f $column_number $filename | grep [0-9] | sort -n`
+	values=`cut -d , -f $column_number $filename | grep [0-9] | sort -n` 
 
-	printf "\nLargest value extracted: "
+	# Calculate each value with percentage
+	#awk -v n="$values" 'BEGIN{ printf int(n*100) "%\n"}'	
+	# Prints the values formatted
+	#awk 'BEGIN {print ($values*100)}'  | tr " " "\n"
+	#echo $values
+	printf "Raw values: \n"
+	for val in $values; do echo $val; done
+	printf "Percentages: \n"
+	for val in $values; do awk -v n="$val" 'BEGIN{ printf int(n*100+0.5) "%\n"}'; done
+	printf "\nLargest value extracted (Percentage): "
 	# Extract the given column number from the filename and print out the exact decimal value using reverse sort and printing the first available value using the head command to print the top of the file
 	largest=`cut -d , -f $column_number $filename | grep -Eo '[0]+\.[0-9]+' | sort -rn | head -n 1`
 	awk -v n="$largest" 'BEGIN{ printf int(n*100+0.5) "%\n"}'
+	printf "Exact value: $largest\n"
 }
 
 
