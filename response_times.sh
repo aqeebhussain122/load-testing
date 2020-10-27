@@ -53,9 +53,10 @@ feature_extract() {
 	# Full extraction of selected column 
 	cut -d , -f $column_number $filename | grep [0-9] | sort -n
 
-	printf "\nLargest value extracted\n"
+	printf "\nLargest value extracted: "
 	# Extract the given column number from the filename and print out the exact decimal value using reverse sort and printing the first available value using the head command to print the top of the file
-	cut -d , -f $column_number $filename | grep -Eo '[0]+\.[0-9]+' | sort -rn | head -n 1
+	largest=`cut -d , -f $column_number $filename | grep -Eo '[0]+\.[0-9]+' | sort -rn | head -n 1`
+	awk -v n="$largest" 'BEGIN{ printf int(n*100+0.5) "%\n"}'
 }
 
 
