@@ -55,7 +55,7 @@ feature_extract() {
 	#values=`cut -d , -f $column_number $filename | grep [0-9] | sort -n`
 	values=`cut -d , -f $column_number $filename | grep [0-9] | sort -n` 
 
-	# Calculate each value with percentage
+	# Calculate each value with second(s)
 	#awk -v n="$values" 'BEGIN{ printf int(n*100) "%\n"}'	
 	# Prints the values formatted
 	#awk 'BEGIN {print ($values*100)}'  | tr " " "\n"
