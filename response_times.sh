@@ -17,12 +17,18 @@ main() {
 	local test_filename=$3
 
 	print_header | tee -a $test_filename
-	for i in `seq 1 $num_requests`; do printf "Request: $i\n"; make_request $url | tee -a $test_filename; done;
+	#for i in `seq 1 $num_requests`; do printf "Request: $i\n"; make_request $url | tee -a $test_filename; done;
+	
+	# For loop containing a parameter which goes with the URL, next step needs to be try getting this into an array so you can load as many parameters as you want
+	for i in `seq 1 $num_requests`; do printf "Request: $i\n"; make_request_with_params $url 'help' 'help2' | tee -a $test_filename; done;
 
 	extract_contents $test_filename
 	echo "Number of requests made: $num_requests"
 	# The test file is flushed after the requests are printed to prevent cross-contamination of other tests
 	rm $test_filename
+
+	#req=`make_request_with_params $url 'help' `
+	#echo $req
 
 	exit 0
 }
@@ -39,7 +45,7 @@ make_request() {
 	curl --write-out "%{http_code},%{time_total},%{time_connect},%{time_appconnect},%{time_starttransfer}\n" --silent --output /dev/null "$target_url"
 
 	# Test call of curl which shows that the function generating the parameter data actually works	
-	#curl --write-out "%{http_code},%{time_total},%{time_connect},%{time_appconnect},%{time_starttransfer}\n" --silent --output /dev/null  "$target_url?help=$(gen_param_data)"
+	#curl --write-out "%{http_code},%{time_total},%{time_connect},%{time_appconnect},%{time_starttransfer}\n" "$target_url?help=$(gen_param_data)"
 
 	# Add two parameter variables which take the gen_data as data but the parameter needs to be the cli argument
 
@@ -53,9 +59,15 @@ make_request() {
 
 make_request_with_params() {
 	local target_url=$1
-	local params=$@
+	local params=("$@")
 
-	curl --write-out "%{http_code},%{time_total},%{time_connect},%{time_appconnect},%{time_starttransfer}\n" "$target_url?${params[0]}=$(gen_param_data)"
+	# One parameter noisy
+	#curl --write-out "%{http_code},%{time_total},%{time_connect},%{time_appconnect},%{time_starttransfer}\n" "$target_url?${params[1]}=$(gen_param_data)"
+	# Two parameters quiet
+	#curl --write-out "%{http_code},%{time_total},%{time_connect},%{time_appconnect},%{time_starttransfer}\n" --silent --output /dev/null "$target_url?${params[1]}=$(gen_param_data)&${params[2]}=$(gen_param_data)"
+	# Two parameters noisy
+	curl --write-out "%{http_code},%{time_total},%{time_connect},%{time_appconnect},%{time_starttransfer}\n" "$target_url?${params[1]}=$(gen_param_data)&${params[2]}=$(gen_param_data)"
+
 }
 
 # Extracting the selected columns from the file which has all of the curl output written to it
@@ -94,6 +106,7 @@ feature_extract() {
 	printf "Exact value: $largest\n"
 }
 
+# Generates the data needed for the parameters
 gen_param_data() {
 	openssl rand -base64 10
 }
