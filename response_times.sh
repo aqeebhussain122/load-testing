@@ -71,6 +71,21 @@ feature_extract() {
 	printf "Exact value: $largest\n"
 }
 
+# Find a page to perform some input and then input some random data
+# Make a post request which connects to a page
+# Caching which is happening because you're requesting the same page.
+# Instead of constant GET requests we should instead generate POST requests adding values into the SQL DB via an HTTP form. Need the parameters for this
+# https://endpoint.com?param1={first-data-random}&param2={second-data-random}
+# Are we testing with normal sized packets or are we expected to use oversized packets?
+# We're using normal sized packets to see 
+# Stress is not showing on the machine but the network connection
+# Run the curl script in the same region of the AWS network
+# Running the script from a broadband does not generate enough traffic
+# Use a couple of instances which are in the same region.
+# Send some random values in the parameters. And these inputs will be
+# Hit network as a bottleneck rather than system but it wasn't their network it was a broadband. 
+# Have a lot of random combinations which are inserted into a file and then reading these requests one by one over the file
+# What point does the response go down
 
 usage "$@"
 main "$@"
