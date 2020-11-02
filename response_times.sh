@@ -21,6 +21,9 @@ main() {
 
 	extract_contents $test_filename
 	echo "Number of requests made: $num_requests"
+	# The test file is flushed after the requests are printed to prevent cross-contamination of other tests
+	rm $test_filename
+
 	exit 0
 }
 
@@ -32,7 +35,27 @@ print_header() {
 # Making the request to target url
 make_request() {
 	local target_url=$1
+	# Needs the full URL with the params inside it
 	curl --write-out "%{http_code},%{time_total},%{time_connect},%{time_appconnect},%{time_starttransfer}\n" --silent --output /dev/null "$target_url"
+
+	# Test call of curl which shows that the function generating the parameter data actually works	
+	#curl --write-out "%{http_code},%{time_total},%{time_connect},%{time_appconnect},%{time_starttransfer}\n" --silent --output /dev/null  "$target_url?help=$(gen_param_data)"
+
+	# Add two parameter variables which take the gen_data as data but the parameter needs to be the cli argument
+
+	# Taking a parameter and appending the random data into a parameter
+	#local param_1_data="$target_url?param1=$(gen_param_data)&param2=$(gen_param_data)"
+	# The parameters need to be added into the 
+
+	# Echo for testing purposes
+	#echo $param_1_data
+}
+
+make_request_with_params() {
+	local target_url=$1
+	local params=$@
+
+	curl --write-out "%{http_code},%{time_total},%{time_connect},%{time_appconnect},%{time_starttransfer}\n" "$target_url?${params[0]}=$(gen_param_data)"
 }
 
 # Extracting the selected columns from the file which has all of the curl output written to it
@@ -63,12 +86,16 @@ feature_extract() {
 	printf "Raw values: (Milliseconds) \n"
 	for val in $values; do echo $val; done
 	printf "Seconds: \n"
-	for val in $values; do awk -v n="$val" 'BEGIN{ printf int(n*100+0.5) "\n"}'; done
+	for val in $values; do awk -v n="$val" 'BEGIN{ printf int(n*10+0.5) "\n"}'; done
 	printf "\nLargest value extracted (Seconds): "
 	# Extract the given column number from the filename and print out the exact decimal value using reverse sort and printing the first available value using the head command to print the top of the file
 	largest=`cut -d , -f $column_number $filename | grep -Eo '[0]+\.[0-9]+' | sort -rn | head -n 1`
-	awk -v n="$largest" 'BEGIN{ printf int(n*100+0.5) "\n"}'
+	awk -v n="$largest" 'BEGIN{ printf int(n*10+0.5) "\n"}'
 	printf "Exact value: $largest\n"
+}
+
+gen_param_data() {
+	openssl rand -base64 10
 }
 
 # Find a page to perform some input and then input some random data
@@ -86,6 +113,8 @@ feature_extract() {
 # Hit network as a bottleneck rather than system but it wasn't their network it was a broadband. 
 # Have a lot of random combinations which are inserted into a file and then reading these requests one by one over the file
 # What point does the response go down
+# openssl rand -base64 10 - Can use this as a simpler solution which can then go into the ongoing requests
+# grep "input type=" Login.aspx | cut -d = -f 3 | awk {'print $1'} | grep \" | sed 's/^"//' | sed 's/"$//
 
 usage "$@"
 main "$@"
