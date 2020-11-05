@@ -20,7 +20,7 @@ main() {
 	#for i in `seq 1 $num_requests`; do printf "Request: $i\n"; make_request $url | tee -a $test_filename; done;
 	
 	# For loop containing a parameter which goes with the URL, next step needs to be try getting this into an array so you can load as many parameters as you want
-	for i in `seq 1 $num_requests`; do printf "Request: $i\n"; make_request_with_params $url 'help' 'help2' | tee -a $test_filename; done
+	for i in `seq 1 $num_requests`; do printf "Request: $i\n"; make_request_with_params $url 'title' 'body' | tee -a $test_filename; done
 
 	extract_contents $test_filename
 	echo "Number of requests made: $num_requests"
@@ -64,10 +64,9 @@ make_request_with_params() {
 	# One parameter noisy
 	#curl --write-out "%{http_code},%{time_total},%{time_connect},%{time_appconnect},%{time_starttransfer}\n" "$target_url?${params[1]}=$(gen_param_data)"
 	# Two parameters quiet
-	curl --write-out "%{http_code},%{time_total},%{time_connect},%{time_appconnect},%{time_starttransfer}\n" --silent --output /dev/null "$target_url?${params[1]}=$(gen_param_data)&${params[2]}=$(gen_param_data)"
-	# Two parameters noisy
 	#curl --write-out "%{http_code},%{time_total},%{time_connect},%{time_appconnect},%{time_starttransfer}\n" --silent --output /dev/null "$target_url?${params[1]}=$(gen_param_data)&${params[2]}=$(gen_param_data)"
-
+	# Two parameters noisy
+	#curl --write-out "%{http_code},%{time_total},%{time_connect},%{time_appconnect},%{time_starttransfer}\n" --silent /dev/null "$target_url?${params[1]}=$(gen_param_data)&${params[2]}=$(gen_param_data)"
 }
 
 # Extracting the selected columns from the file which has all of the curl output written to it
