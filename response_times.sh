@@ -64,7 +64,7 @@ make_request_with_params() {
 	# One parameter noisy
 	#curl --write-out "%{http_code},%{time_total},%{time_connect},%{time_appconnect},%{time_starttransfer}\n" "$target_url?${params[1]}=$(gen_param_data)"
 	# Two parameters quiet
-	#curl --write-out "%{http_code},%{time_total},%{time_connect},%{time_appconnect},%{time_starttransfer}\n" --silent --output /dev/null "$target_url?${params[1]}=$(gen_param_data)&${params[2]}=$(gen_param_data)"
+	curl --write-out "%{http_code},%{time_total},%{time_connect},%{time_appconnect},%{time_starttransfer}\n" --silent --output /dev/null "$target_url?${params[1]}=$(gen_param_data)&${params[2]}=$(gen_param_data)"
 	# Two parameters noisy
 	#curl --write-out "%{http_code},%{time_total},%{time_connect},%{time_appconnect},%{time_starttransfer}\n" --silent /dev/null "$target_url?${params[1]}=$(gen_param_data)&${params[2]}=$(gen_param_data)"
 }
